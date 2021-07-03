@@ -11,10 +11,12 @@ public class RocketMovement : MonoBehaviour
     private float rocketRotationSpeed = 50f;
 
     private Rigidbody _rigidBody;
+    private AudioSource _audioSource;
 
     void Start()
     {
         _rigidBody = GetComponent<Rigidbody>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -50,6 +52,22 @@ public class RocketMovement : MonoBehaviour
         {
             // We add the relative force because if we rotate, we need to point into the direction in which is rotated
             _rigidBody.AddRelativeForce(Vector3.up * rocketBoostSpeed * Time.deltaTime);
+            
+            if (!_audioSource.isPlaying)
+            {
+                _audioSource.Play();
+            }
+        } else
+        {
+            StopAudio();
+        }
+    }
+
+    private void StopAudio()
+    {
+        if (_audioSource.isPlaying)
+        {
+            _audioSource.Stop();
         }
     }
 }
