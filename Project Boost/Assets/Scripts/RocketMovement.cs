@@ -9,6 +9,8 @@ public class RocketMovement : MonoBehaviour
     private float rocketBoostSpeed = 1000f;
     [SerializeField]
     private float rocketRotationSpeed = 50f;
+    [SerializeField]
+    private AudioClip movementAudio;
 
     private Rigidbody _rigidBody;
     private AudioSource _audioSource;
@@ -55,7 +57,7 @@ public class RocketMovement : MonoBehaviour
             
             if (!_audioSource.isPlaying)
             {
-                _audioSource.Play();
+                _audioSource.PlayOneShot(movementAudio);
             }
         } else
         {
