@@ -8,25 +8,45 @@ public class CollisionHandler : MonoBehaviour
 {
     [SerializeField]
     private float levelLoadDelay = 1f;
-
     [SerializeField]
     private AudioClip collisionAudio;
-
     [SerializeField]
     private AudioClip finishAudio;
+    [SerializeField]
+    private ParticleSystem crashParticle;
+    [SerializeField]
+    private ParticleSystem successParticle;
 
     private AudioSource _audioSource;
 
     private bool isTransitioning = false;
+    private bool isCollisionDisabled = false;
 
     private void Start()
     {
         _audioSource = GetComponent<AudioSource>();
     }
 
+    private void Update()
+    {
+        RespondToDebug();
+    }
+
+    private void RespondToDebug()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            GoToNextLevel();
+        }
+        else if (Input.GetKeyDown(KeyCode.C))
+        {
+            isCollisionDisabled = !isCollisionDisabled;
+        }
+    }
+
     private void OnCollisionEnter(Collision other)
     {
-        if (isTransitioning)
+        if (isTransitioning || isCollisionDisabled)
             return;
 
         switch (other.gameObject.tag)
@@ -48,6 +68,7 @@ public class CollisionHandler : MonoBehaviour
 
     private void StartSuccessSequence()
     {
+        successParticle.Play();
         isTransitioning = true;
         _audioSource.Stop();
         _audioSource.PlayOneShot(finishAudio);
@@ -58,6 +79,7 @@ public class CollisionHandler : MonoBehaviour
 
     private void StartCrashSequence()
     {
+        crashParticle.Play();
         isTransitioning = true;
         _audioSource.Stop(); // Stop all sounds
         _audioSource.PlayOneShot(collisionAudio);

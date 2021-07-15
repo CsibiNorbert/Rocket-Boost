@@ -11,6 +11,12 @@ public class RocketMovement : MonoBehaviour
     private float rocketRotationSpeed = 50f;
     [SerializeField]
     private AudioClip movementAudio;
+    [SerializeField]
+    private ParticleSystem jetParticle;
+    [SerializeField]
+    private ParticleSystem rightParticle;
+    [SerializeField]
+    private ParticleSystem leftParticle;
 
     private Rigidbody _rigidBody;
     private AudioSource _audioSource;
@@ -33,12 +39,40 @@ public class RocketMovement : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.A))
         {
-            ApplyRotation(rocketRotationSpeed);
+            LeftRotation();
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            ApplyRotation(-rocketRotationSpeed);
+            RightRotation();
         }
+        else
+        {
+            StopRotation();
+        }
+    }
+
+    private void StopRotation()
+    {
+        leftParticle.Stop();
+        rightParticle.Stop();
+    }
+
+    private void RightRotation()
+    {
+        if (!rightParticle.isPlaying)
+        {
+            rightParticle.Play();
+        }
+        ApplyRotation(-rocketRotationSpeed);
+    }
+
+    private void LeftRotation()
+    {
+        if (!leftParticle.isPlaying)
+        {
+            leftParticle.Play();
+        }
+        ApplyRotation(rocketRotationSpeed);
     }
 
     private void ApplyRotation(float rotationFrame)
@@ -52,16 +86,32 @@ public class RocketMovement : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            // We add the relative force because if we rotate, we need to point into the direction in which is rotated
-            _rigidBody.AddRelativeForce(Vector3.up * rocketBoostSpeed * Time.deltaTime);
-            
-            if (!_audioSource.isPlaying)
-            {
-                _audioSource.PlayOneShot(movementAudio);
-            }
-        } else
+            StartThrust();
+        }
+        else
         {
-            StopAudio();
+            StopThrust();
+        }
+    }
+
+    private void StopThrust()
+    {
+        jetParticle.Stop();
+        StopAudio();
+    }
+
+    private void StartThrust()
+    {
+        if (!jetParticle.isPlaying)
+        {
+            jetParticle.Play();
+        }
+        // We add the relative force because if we rotate, we need to point into the direction in which is rotated
+        _rigidBody.AddRelativeForce(Vector3.up * rocketBoostSpeed * Time.deltaTime);
+
+        if (!_audioSource.isPlaying)
+        {
+            _audioSource.PlayOneShot(movementAudio);
         }
     }
 
